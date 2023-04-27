@@ -1,7 +1,7 @@
 /*
-* Filename : ppipe.c
-* copyright : (C) 2006 by zhanghonglie
-* Function : 利用管道实现在父子进程间传递整数
+* Filename : exp2.c
+* copyright : (C) 2023 YJQ
+* Function : 建立三个并发协作进程，分别完成三个函数的实现。
 */
 #include <sys/types.h>
 #include <unistd.h>
@@ -86,11 +86,11 @@ int main(int argc, char *argv[])
 			printf("process create successfully\n"); 
 	}
 
-    // 子进程号等于 0 表示子进程在执行,
+     // pid1 为 0 表示 1 号子进程在执行, 1 号子进程负责执行f(x)
     if (pid1 == 0)
     {
-        // 子进程负责从管道 1 的 0 端读,管道 2 的 1 端写，
-        // 所以关掉管道 1 的 1 端和管道 2 的 0 端。
+        // 1号子进程只负责从管道 1 的 1 端写，
+        // 所以关掉管道 1 的 0 端和管道 2 的 0 端以及 1 端。
 		close(pipe1[0]);
 		close(pipe2[0]);
 		close(pipe2[1]);
@@ -104,11 +104,11 @@ int main(int argc, char *argv[])
         // 子进程执行结束
         exit(EXIT_SUCCESS);
     }
-
+    // pid2 为 0 表示 2 号子进程在执行, 2 号子进程负责执行f(y)
     if (pid2 == 0 && pid1 > 0)
     {
-        // 子进程负责从管道 1 的 0 端读,管道 2 的 1 端写，
-        // 所以关掉管道 1 的 1 端和管道 2 的 0 端。
+        // 2号子进程只负责从管道 1 的 1 端写，
+        // 所以关掉管道 1 的 0 端和管道 2 的 0 端以及 1 端。
 		close(pipe2[0]);
 		close(pipe1[0]);
 		close(pipe1[1]);
@@ -125,8 +125,8 @@ int main(int argc, char *argv[])
     // 子进程号大于 0 表示父进程在执行,
     if (pid1 > 0 && pid2 > 0)
     {
-        // 每次循环向管道 1 的 1 端写入变量 X 的值,并从
-        // 管道 2 的 0 端读一整数写入 X 再对 X 加 1，直到 X 大于 10
+		// 此时在父进程中
+		// 父进程仅接受来自2个子进程的数据
     	waitpid(pid1, NULL, 0);
 	    waitpid(pid2, NULL, 0);
         close(pipe1[1]);
