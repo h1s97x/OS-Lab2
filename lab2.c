@@ -40,8 +40,7 @@ int main(int argc, char *argv[])
     int i,j;
     f1();
     f2();
-	for(;m<M;m++){
-        for(;n<M;n++){
+	for(;m<M;m++,n++){
 
     // 使用 pipe()系统调用建立两个无名管道。建立不成功程序退出，执行终止
     if (pipe(pipe1) < 0)
@@ -128,7 +127,7 @@ int main(int argc, char *argv[])
         close(pipe1[0]);
 		close(pipe2[0]);
     }
-            }
+
     }
     // 父进程执行结束
     return EXIT_SUCCESS;
